@@ -1,0 +1,80 @@
+#include<stdio.h>
+#include<omp.h>
+
+int main()
+{
+    // Set number of threads
+    omp_set_num_threads(4);
+
+    // Array initialization
+    double arr[10] = {1,2,3,4,5,6,7,8,9,10};
+
+    // Variables
+    double max = 0.0;
+    double min = 100.0;
+    float avg = 0.0, sum = 0.0, total = 0.0;
+
+    int i;
+
+    // Minimum value using reduction
+    #pragma omp parallel for reduction(min:min)
+    for(i = 0; i < 10; i++)
+    {
+        printf("Thread ID = %d and i = %d\n",
+               omp_get_thread_num(), i);
+
+        if(arr[i] < min)
+        {
+            min = arr[i];
+        }
+    }
+
+    printf("\nMinimum value = %f\n", min);
+    printf("\n");
+
+    // Maximum value using reduction
+    #pragma omp parallel for reduction(max:max)
+    for(i = 0; i < 10; i++)
+    {
+        printf("Thread ID = %d and i = %d\n",
+               omp_get_thread_num(), i);
+
+        if(arr[i] > max)
+        {
+            max = arr[i];
+        }
+    }
+
+    printf("\nMaximum value = %f\n", max);
+    printf("\n");
+
+    // Sum using reduction
+    #pragma omp parallel for reduction(+:total)
+    for(i = 0; i < 10; i++)
+    {
+        printf("Thread ID = %d and i = %d\n",
+               omp_get_thread_num(), i);
+
+        total = total + arr[i];
+    }
+
+    printf("\nSum = %f\n", total);
+    printf("\n");
+
+    // Average using reduction
+    #pragma omp parallel for reduction(+:sum)
+    for(i = 0; i < 10; i++)
+    {
+        printf("Thread ID = %d and i = %d\n",
+               omp_get_thread_num(), i);
+
+        sum = sum + arr[i];
+    }
+
+    avg = sum / 10;
+
+    printf("\nAverage = %f\n", avg);
+    printf("\n");
+
+    return 0;
+}
